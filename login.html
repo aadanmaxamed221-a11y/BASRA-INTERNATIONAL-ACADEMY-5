@@ -1,0 +1,397 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Basra International Academy</title>
+
+    <style>
+        :root {
+            --primary: #087cae;
+            --secondary: #075985;
+            --accent: #12b8d6;
+            --background: #f1f7fb;
+            --text: #183247;
+            --muted: #718096;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* School header */
+        .header {
+            width: 100%;
+            min-height: 105px;
+            padding: 18px 6%;
+            background: linear-gradient(
+                120deg,
+                var(--secondary),
+                var(--primary),
+                var(--accent)
+            );
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(0, 50, 80, 0.15);
+        }
+
+        .header-logo {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 4px;
+        }
+
+        .header h1 {
+            font-size: clamp(18px, 3vw, 27px);
+            margin-bottom: 7px;
+            letter-spacing: 0.3px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.92;
+        }
+
+        /* Main area */
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 45px 18px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: var(--white);
+            border-radius: 18px;
+            padding: 35px 32px;
+            box-shadow: 0 12px 38px rgba(22, 65, 95, 0.12);
+            border-top: 5px solid var(--accent);
+        }
+
+        .school-brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .school-logo {
+            width: 125px;
+            height: 125px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 15px;
+        }
+
+        .school-brand h2 {
+            color: var(--secondary);
+            font-size: 21px;
+            line-height: 1.4;
+            margin-bottom: 7px;
+        }
+
+        .school-brand p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 19px;
+            margin-bottom: 23px;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 47px;
+            padding: 12px 14px;
+            border: 1px solid #d5e0e8;
+            border-radius: 9px;
+            background: #fbfdff;
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(8, 124, 174, 0.12);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .input-field {
+            padding-right: 82px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 3px;
+        }
+
+        .login-button {
+            width: 100%;
+            min-height: 49px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(
+                120deg,
+                var(--secondary),
+                var(--primary)
+            );
+            color: var(--white);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .login-button:hover {
+            opacity: 0.93;
+            transform: translateY(-1px);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            background: #fff0f0;
+            color: #b42318;
+            border: 1px solid #ffd0d0;
+        }
+
+        .message.success {
+            background: #edfff3;
+            color: #167744;
+            border: 1px solid #bce8cc;
+        }
+
+        .message.info {
+            background: #edf8ff;
+            color: #075985;
+            border: 1px solid #c9e9fa;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 15px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .header-logo {
+                width: 53px;
+                height: 53px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 28px 14px;
+            }
+
+            .login-card {
+                padding: 28px 22px;
+            }
+
+            .school-logo {
+                width: 105px;
+                height: 105px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <img
+            src="{{ url_for('static', filename='images/Logo.png.jpeg') }}"
+            alt="Basra International Academy Logo"
+            class="header-logo"
+        >
+
+        <div>
+            <h1>BASRA INTERNATIONAL ACADEMY</h1>
+            <p>Attendance Management System</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="login-card">
+
+            <div class="school-brand">
+                <img
+                    src="{{ url_for('static', filename='images/Logo.png.jpeg') }}"
+                    alt="School Logo"
+                    class="school-logo"
+                >
+
+                <h2>BASRA INTERNATIONAL ACADEMY</h2>
+                <p>Attendance Management System</p>
+            </div>
+
+            <h3 class="login-title">Sign in to your account</h3>
+
+            <!-- Messages from Flask -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div
+                            class="message {% if category in ['danger', 'error'] %}error{% elif category == 'success' %}success{% else %}info{% endif %}"
+                            role="alert"
+                        >
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Login form -->
+            <form method="POST" action="{{ url_for('login') }}">
+
+                {% if csrf_token is defined %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="input-field"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="input-field"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            id="togglePassword"
+                            onclick="togglePasswordVisibility()"
+                            aria-label="Show password"
+                        >
+                            SHOW
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-button">
+                    LOGIN
+                </button>
+
+            </form>
+
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; <span id="currentYear"></span> Basra International Academy.</p>
+        <p>Attendance Management System | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById("password");
+            const toggleButton = document.getElementById("togglePassword");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleButton.textContent = "HIDE";
+                toggleButton.setAttribute("aria-label", "Hide password");
+            } else {
+                passwordInput.type = "password";
+                toggleButton.textContent = "SHOW";
+                toggleButton.setAttribute("aria-label", "Show password");
+            }
+        }
+
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
+    </script>
+
+</body>
+</html>
+```

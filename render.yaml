@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: basra-international-academy-attendance
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: basra-attendance-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: basra-attendance-db
+    databaseName: basra_attendance
+    user: basra_admin
