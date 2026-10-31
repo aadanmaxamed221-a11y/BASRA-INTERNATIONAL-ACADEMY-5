@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Timetable · Jadwalka Xiisadaha</h1>
+<section class="panel"><h2>Ku dar xiisad</h2>
+<form method="post" class="form-grid">
+<div><label>Magaca xiisadda</label><input name="name" placeholder="Period 1" required></div>
+<div><label>Bilowga</label><input type="time" name="start_time" required></div>
+<div><label>Dhammaadka</label><input type="time" name="end_time" required></div>
+<div><label>Maalinta</label><select name="weekday"><option value="0">Maalmaha dugsiga oo dhan</option><option value="1">Isniin</option><option value="2">Talaado</option><option value="3">Arbaco</option><option value="4">Khamiis</option><option value="5">Jimce</option></select></div>
+<div class="form-action"><button type="submit">Kaydi xiisadda</button></div>
+</form><p class="muted">Waqtiga waxaa loo qaadanayaa waqtiga Soomaaliya (Mogadishu). Maalinta “oo dhan” waxay ka dhigan tahay maalin kasta oo jadwalka la isticmaalo.</p>
+</section>
+<section class="panel"><h2>Jadwalka jira</h2><div class="table-wrap"><table><thead><tr><th>Xiisad</th><th>Maalin</th><th>Bilow</th><th>Dhammaad</th></tr></thead><tbody>
+{% for p in periods %}<tr><td>{{ p.name }}</td><td>{{ {0:'Maalmaha oo dhan',1:'Isniin',2:'Talaado',3:'Arbaco',4:'Khamiis',5:'Jimce'}.get(p.weekday) }}</td><td>{{ p.start_time.strftime('%H:%M') }}</td><td>{{ p.end_time.strftime('%H:%M') }}</td></tr>{% else %}<tr><td colspan="4">Jadwal weli lama samayn.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

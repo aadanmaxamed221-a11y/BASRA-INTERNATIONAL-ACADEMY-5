@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Attendance | BASRA INTERNATIONAL ACADEMY</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 20px; font-family: Arial, sans-serif;
+            background: #f3f6fa; color: #172033;
+        }
+        .container { max-width: 1100px; margin: auto; }
+        h1 { color: #123b70; font-size: 26px; }
+        .panel {
+            background: white; padding: 20px; border-radius: 12px;
+            margin-bottom: 20px; box-shadow: 0 3px 12px #0000000d;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; align-items: end;
+        }
+        label { display: block; font-weight: bold; margin-bottom: 7px; }
+        select, input, button {
+            width: 100%; padding: 11px; border: 1px solid #ccd4df;
+            border-radius: 7px; font-size: 14px;
+        }
+        button {
+            border: none; cursor: pointer; font-weight: bold;
+            background: #1455a0; color: white;
+        }
+        button:hover { opacity: .9; }
+        .present-btn { background: #18834b; }
+        .save-btn { background: #123b70; }
+        .notice {
+            padding: 12px; border-radius: 7px; margin-bottom: 12px;
+            background: #e8f2ff;
+        }
+        .student-row {
+            display: grid; grid-template-columns: 1fr 180px;
+            gap: 15px; align-items: center; padding: 12px 0;
+            border-bottom: 1px solid #e8edf3;
+        }
+        .student-name { font-weight: bold; }
+        .student-code {
+            display: block; color: #687589; font-size: 12px; margin-top: 4px;
+        }
+        .status-Present { color: #16804a; }
+        .status-Absent { color: #c62828; }
+        .status-Late { color: #b87500; }
+        .status-Excused { color: #2865bb; }
+        .buttons { display: flex; gap: 10px; margin: 18px 0; }
+        .buttons button { flex: 1; }
+        .muted { color: #687589; }
+        .back-link { display: inline-block; margin-bottom: 15px; color: #1455a0; }
+        @media (max-width: 520px) {
+            body { padding: 10px; }
+            .student-row { grid-template-columns: 1fr; gap: 8px; }
+            .buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back-link" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    <h1>{{ school_name or "BASRA INTERNATIONAL ACADEMY" }}</h1>
+    <h2>Student Attendance</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="notice">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="panel">
+        <form method="GET" action="{{ url_for('attendance') }}">
+            <div class="filters">
+                <div>
+                    <label for="class_name">Class</label>
+                    <select name="class_name" id="class_name" required>
+                        <option value="">Choose class</option>
+                        {% for c in classes %}
+                            <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>
+                                {{ c }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="period_id">Lesson / Period</label>
+                    <select name="period_id" id="period_id" required>
+                        <option value="">Choose period</option>
+                        {% for p in periods %}
+                            <option value="{{ p.id }}"
+                                {% if selected_period and selected_period.id == p.id %}selected{% endif %}>
+                                {{ p.name }} ({{ p.start_time.strftime('%H:%M') }} - {{ p.end_time.strftime('%H:%M') }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="attendance_date">Date</label>
+                    <input type="date" name="attendance_date" id="attendance_date"
+                           value="{{ selected_date }}" required>
+                </div>
+                <div><button type="submit">Load Students</button></div>
+            </div>
+        </form>
+    </div>
+
+    {% if selected_class and selected_period %}
+        <div class="panel">
+            <h3>{{ selected_class }} — {{ selected_period.name }} — {{ selected_date }}</h3>
+
+            {% if existing %}
+                <div class="notice">
+                    Xaadirin hore ayaa jirta.
+                    {% if is_admin %}
+                        Admin ahaan waad wax ka beddeli kartaa.
+                    {% else %}
+                        Wax-ka-beddelka waxaa loo oggol yahay Admin keliya.
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="notice">
+                    Xaadirin hore lama helin. Calaamadee ardayda kadibna kaydi.
+                </div>
+            {% endif %}
+
+            {% if students %}
+                <form method="POST" action="{{ url_for('attendance') }}">
+                    <input type="hidden" name="class_name" value="{{ selected_class }}">
+                    <input type="hidden" name="period_id" value="{{ selected_period.id }}">
+                    <input type="hidden" name="attendance_date" value="{{ selected_date }}">
+
+                    <div class="buttons">
+                        <button type="button" class="present-btn" id="markAllPresent">
+                            Mark All Present
+                        </button>
+                        {% if is_admin and existing %}
+                            <button type="submit" class="save-btn">Update Attendance</button>
+                        {% elif not existing %}
+                            <button type="submit" class="save-btn">Save Attendance</button>
+                        {% endif %}
+                    </div>
+
+                    {% for student in students %}
+                        {% set current_status = existing.get(student.id, 'Present') %}
+                        <div class="student-row">
+                            <div>
+                                <span class="student-name">{{ loop.index }}. {{ student.full_name }}</span>
+                                <span class="student-code">ID: {{ student.student_code }}</span>
+                            </div>
+                            <div>
+                                <label for="status_{{ student.id }}">Status</label>
+                                <select name="status_{{ student.id }}"
+                                        id="status_{{ student.id }}"
+                                        class="status-select status-{{ current_status }}"
+                                        {% if existing and not is_admin %}disabled{% endif %}
+                                        required>
+                                    {% for status in ['Present', 'Absent', 'Late', 'Excused'] %}
+                                        <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>
+                                            {{ status }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <p class="muted">Total students: {{ students|length }}</p>
+
+                    {% if is_admin and existing %}
+                        <button type="submit" class="save-btn">Update Attendance</button>
+                    {% elif not existing %}
+                        <button type="submit" class="save-btn">Save Attendance</button>
+                    {% endif %}
+                </form>
+            {% else %}
+                <p class="muted">Arday firfircoon lagama helin fasalkan.</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="panel">
+            <p>Dooro fasalka, xiisadda iyo taariikhda, kadib riix <strong>Load Students</strong>.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    const markAllButton = document.getElementById("markAllPresent");
+
+    if (markAllButton) {
+        markAllButton.addEventListener("click", function () {
+            document.querySelectorAll(".status-select:not(:disabled)").forEach(function (select) {
+                select.value = "Present";
+                select.className = "status-select status-Present";
+            });
+        });
+    }
+
+    document.querySelectorAll(".status-select").forEach(function (select) {
+        select.addEventListener("change", function () {
+            select.className = "status-select status-" + select.value;
+        });
+    });
+</script>
+</body>
+</html>

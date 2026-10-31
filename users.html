@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Users · Akoonnada</h1>
+<section class="panel"><h2>Samee akoon</h2>
+<form method="post" class="form-grid">
+<div><label>Username</label><input name="username" required></div>
+<div><label>Password (ugu yaraan 8 xaraf)</label><input name="password" type="password" minlength="8" required></div>
+<div><label>Role</label><select name="role"><option value="teacher">Teacher / User</option><option value="admin">Admin</option></select></div>
+<div class="form-action"><button type="submit">Samee user</button></div>
+</form></section>
+<section class="panel"><h2>Users-ka jira</h2><div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Active</th></tr></thead><tbody>
+{% for u in users %}<tr><td>{{ u.username }}</td><td>{{ u.role|title }}</td><td>{{ 'Haa' if u.active else 'Maya' }}</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

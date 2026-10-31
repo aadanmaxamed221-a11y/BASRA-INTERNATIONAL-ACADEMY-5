@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ school_name|default('BASRA INTERNATIONAL ACADEMY') }} | Attendance</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <img
+            src="{{ url_for('static', filename='images/Logo.png.jpeg') }}"
+            alt="Basra International Academy Logo"
+            class="school-logo"
+        >
+
+        <div class="brand-text">
+            <strong>BASRA INTERNATIONAL ACADEMY</strong>
+            <small>Attendance Management System</small>
+        </div>
+    </div>
+
+    {% if current_user.is_authenticated %}
+    <nav class="main-nav" aria-label="Main navigation">
+
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('attendance') }}">Attendance</a>
+        <a href="{{ url_for('reports') }}">Reports</a>
+
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('students') }}">Students</a>
+        <a href="{{ url_for('users') }}">Users</a>
+        <a href="{{ url_for('timetable') }}">Timetable</a>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+
+    </nav>
+    {% endif %}
+
+</header>
+
+<main class="container">
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert {{ category }}" role="status">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+
+</main>
+
+<footer class="footer">
+    <p>&copy; {{ school_name|default('BASRA INTERNATIONAL ACADEMY') }}</p>
+    <p>Attendance Management System</p>
+    <p>Education · Discipline · Excellence</p>
+</footer>
+
+</body>
+</html>

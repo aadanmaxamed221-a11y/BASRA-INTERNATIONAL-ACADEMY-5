@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Students · Ardayda</h1>
+<section class="panel"><h2>Diiwaangeli arday cusub</h2>
+<form method="post" class="form-grid">
+<div><label>Student ID</label><input name="student_code" required></div>
+<div><label>Magaca ardayga</label><input name="full_name" required></div>
+<div><label>Fasalka</label><input name="class_name" placeholder="Tusaale: Grade 8" required></div>
+<div class="form-action"><button type="submit">Kaydi ardayga</button></div>
+</form></section>
+<section class="panel"><h2>Diiwaanka ardayda ({{ students|length }})</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>Magac</th><th>Fasal</th><th>Xaalad</th></tr></thead><tbody>
+{% for s in students %}<tr><td>{{ s.student_code }}</td><td>{{ s.full_name }}</td><td>{{ s.class_name }}</td><td>{{ 'Active' if s.active else 'Inactive' }}</td></tr>{% else %}<tr><td colspan="4">Arday lama diiwaangelin.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Attendance Reports · Warbixin</h1>
+<section class="panel"><form method="get" class="form-grid">
+<div><label>Taariikh</label><input type="date" name="date" value="{{ date_text }}"></div>
+<div><label>Fasalka</label><select name="class_name"><option value="">Dhammaan fasallada</option>{% for c in classes %}<option value="{{ c }}" {% if c == class_name %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+<div class="form-action"><button type="submit">Raadi</button></div>
+</form></section>
+<div class="grid">
+{% for status, count in counts.items() %}<div class="stat"><span>{{ status }}</span><strong>{{ count }}</strong></div>{% endfor %}
+</div>
+<section class="panel"><h2>Warbixinta {{ date_text }}</h2><div class="table-wrap"><table><thead><tr><th>Arday</th><th>ID</th><th>Fasal</th><th>Xiisad</th><th>Xaalad</th><th>Waxaa diiwaangeliyey</th></tr></thead><tbody>
+{% for r in records %}<tr><td>{{ r.student.full_name }}</td><td>{{ r.student.student_code }}</td><td>{{ r.student.class_name }}</td><td>{{ r.period.name }}</td><td><span class="badge {{ r.status|lower }}">{{ r.status }}</span></td><td>{{ r.user.username }}</td></tr>{% else %}<tr><td colspan="6">Wax xog ah lama helin taariikhdan.</td></tr>{% endfor %}
+</tbody></table></div><button onclick="window.print()" class="print-button">Print / Save as PDF</button></section>
+{% endblock %}
