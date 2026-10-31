@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+<p>Ku soo dhowow, <strong>{{ current_user.username }}</strong> · Role: {{ current_user.role|title }}</p>
+<div class="grid">
+  <div class="stat"><span>Ardayda firfircoon</span><strong>{{ total_students }}</strong></div>
+  <div class="stat"><span>Xaadirin maanta</span><strong>{{ today_records }}</strong></div>
+  <div class="stat"><span>Maqan maanta</span><strong>{{ absent_today }}</strong></div>
+</div>
+<section class="panel">
+  <h2>Xiisadda hadda socota</h2>
+  {% if period %}<p class="active-period">🟢 {{ period.name }} · {{ period.start_time.strftime('%H:%M') }}–{{ period.end_time.strftime('%H:%M') }}</p>
+  {% else %}<p>Hadda ma jiro xiisad jadwalaysan. Admin ha dejiyo jadwalka Timetable.</p>{% endif %}
+  <a class="button" href="{{ url_for('attendance', period_id=period.id) if period else url_for('attendance') }}">Diiwaangeli xaadirinta</a>
+</section>
+<section class="panel">
+<h2>Xaadirintii ugu dambaysay maanta</h2>
+<div class="table-wrap"><table><thead><tr><th>Arday</th><th>Fasal</th><th>Xiisad</th><th>Xaalad</th><th>Waqti</th></tr></thead><tbody>
+{% for r in recent %}<tr><td>{{ r.student.full_name }}</td><td>{{ r.student.class_name }}</td><td>{{ r.period.name }}</td><td><span class="badge {{ r.status|lower }}">{{ r.status }}</span></td><td>{{ r.marked_at.strftime('%H:%M') }}</td></tr>
+{% else %}<tr><td colspan="5">Weli xaadirin lama diiwaangelin maanta.</td></tr>{% endfor %}
+</tbody></table></div>
+</section>
+{% endblock %}
